@@ -1,0 +1,90 @@
+<ng-container *ngIf="vm$ | async as vm">
+  <h1>Doppelkopf Konverter</h1>
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>1. Datei auswählen</mat-card-title>
+    </mat-card-header>
+    <mat-card-content
+      >Wähle eine oder mehrere .dkl Dateien aus
+    </mat-card-content>
+    <mat-card-actions align="end">
+      <button
+        mat-flat-button
+        color="primary"
+        style="display: block"
+        (click)="fileInput.click()"
+      >
+        Datei auswählen
+      </button>
+      <input
+        #fileInput
+        hidden
+        multiple
+        type="file"
+        class="file-upload"
+        (change)="onFileSelected($event)"
+      />
+    </mat-card-actions>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>2. Vorschau</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <p>Hier siehst du eine Vorschau der extrahierten Spieler und Punkte.</p>
+      <p>
+        Wenn du den Punkte-Faktor änderst, wird dieser direkt auf die Punkte in
+        der Tabelle angewendet.
+      </p>
+
+      <mat-form-field>
+        <mat-label>Punkte-Faktor</mat-label>
+        <input
+          #factor
+          matInput
+          type="number"
+          step="0.05"
+          [value]="vm.factor | number: '1.2'"
+          (change)="onFactorChange(factor.value)"
+        />
+        <div matSuffix style="margin: 0 20px">€</div>
+      </mat-form-field>
+
+      <table mat-table [dataSource]="vm.data">
+        <ng-container *ngFor="let player of vm.headers">
+          <ng-container [matColumnDef]="player">
+            <th mat-header-cell *matHeaderCellDef>{{ player }}</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element[player] | currency: 'EUR' }}
+            </td>
+          </ng-container>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="vm.headers"></tr>
+        <tr mat-row *matRowDef="let row; columns: vm.headers"></tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>3. Speichern</mat-card-title>
+    </mat-card-header>
+    <mat-card-content
+      >Klicke auf "Speichern" um die Tabelle als CSV-Datei zu speichern.
+    </mat-card-content>
+
+    <mat-card-actions align="end">
+      <button
+        mat-flat-button
+        color="primary"
+        style="display: block"
+        (click)="onExportClicked()"
+      >
+        Speichern
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</ng-container>
